@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  GameViewController.h
 //  TicTacToe
 //
 //  Created by Leandro Pessini on 3/12/15.
@@ -8,8 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
-
+@interface GameViewController : UIViewController
 
 @end
-

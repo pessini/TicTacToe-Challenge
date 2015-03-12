@@ -9,11 +9,11 @@
 /* Begin PBXBuildFile section */
 		568761E61AB222BD0082F632 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 568761E51AB222BD0082F632 /* main.m */; };
 		568761E91AB222BD0082F632 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 568761E81AB222BD0082F632 /* AppDelegate.m */; };
-		568761EC1AB222BD0082F632 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 568761EB1AB222BD0082F632 /* ViewController.m */; };
 		568761EF1AB222BD0082F632 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 568761ED1AB222BD0082F632 /* Main.storyboard */; };
 		568761F11AB222BD0082F632 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 568761F01AB222BD0082F632 /* Images.xcassets */; };
 		568761F41AB222BD0082F632 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 568761F21AB222BD0082F632 /* LaunchScreen.xib */; };
 		568762001AB222BD0082F632 /* TicTacToeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 568761FF1AB222BD0082F632 /* TicTacToeTests.m */; };
+		5687620B1AB225510082F632 /* GameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5687620A1AB225510082F632 /* GameViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -32,14 +32,14 @@
 		568761E51AB222BD0082F632 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		568761E71AB222BD0082F632 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		568761E81AB222BD0082F632 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
-		568761EA1AB222BD0082F632 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		568761EB1AB222BD0082F632 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		568761EE1AB222BD0082F632 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		568761F01AB222BD0082F632 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		568761F31AB222BD0082F632 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		568761F91AB222BD0082F632 /* TicTacToeTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TicTacToeTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		568761FE1AB222BD0082F632 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		568761FF1AB222BD0082F632 /* TicTacToeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TicTacToeTests.m; sourceTree = "<group>"; };
+		568762091AB225510082F632 /* GameViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameViewController.h; sourceTree = "<group>"; };
+		5687620A1AB225510082F632 /* GameViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -83,8 +83,8 @@
 			children = (
 				568761E71AB222BD0082F632 /* AppDelegate.h */,
 				568761E81AB222BD0082F632 /* AppDelegate.m */,
-				568761EA1AB222BD0082F632 /* ViewController.h */,
-				568761EB1AB222BD0082F632 /* ViewController.m */,
+				568762091AB225510082F632 /* GameViewController.h */,
+				5687620A1AB225510082F632 /* GameViewController.m */,
 				568761ED1AB222BD0082F632 /* Main.storyboard */,
 				568761F01AB222BD0082F632 /* Images.xcassets */,
 				568761F21AB222BD0082F632 /* LaunchScreen.xib */,
@@ -219,8 +219,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				568761EC1AB222BD0082F632 /* ViewController.m in Sources */,
 				568761E91AB222BD0082F632 /* AppDelegate.m in Sources */,
+				5687620B1AB225510082F632 /* GameViewController.m in Sources */,
 				568761E61AB222BD0082F632 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
