@@ -8,9 +8,9 @@
 
 #import "GameViewController.h"
 
-#define TIME_FOR_EACH_PLAYER 10
+#define TIME_FOR_EACH_PLAYER 5
 
-@interface GameViewController () <UIAlertViewDelegate>
+@interface GameViewController () <UIAlertViewDelegate, UIGestureRecognizerDelegate>
 
 @property (weak, nonatomic) IBOutlet UILabel *labelOne;
 @property (weak, nonatomic) IBOutlet UILabel *labelTwo;
@@ -23,6 +23,12 @@
 @property (weak, nonatomic) IBOutlet UILabel *labelNine;
 @property (weak, nonatomic) IBOutlet UILabel *whichPlayerLabel;
 @property (weak, nonatomic) IBOutlet UILabel *timerLabel;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *gameTypeSegmentedControl;
+
+
+@property (weak, nonatomic) IBOutlet UIView *computerTurnView;
+@property (weak, nonatomic) IBOutlet UIImageView *waitingComputerImageView;
+
 
 @property CGPoint originalCenterWhichPlayerSquare;
 
@@ -64,10 +70,14 @@
 
     // X will be the first to play
     self.whichPlayerLabel.text = @"X";
+    self.timerLabel.text = [NSString stringWithFormat:@"%i seconds", TIME_FOR_EACH_PLAYER];
     self.originalCenterWhichPlayerSquare = self.whichPlayerLabel.center;
 
     self.arrayWinnerX = [NSArray arrayWithObjects:@"X",@"X",@"X", nil];
     self.arrayWinnerO = [NSArray arrayWithObjects:@"O",@"O",@"O", nil];
+
+    // hide the view which shows that it is the computer's turn
+    self.computerTurnView.hidden = YES;
 
 }
 
@@ -94,13 +104,22 @@
 
         self.whichPlayerLabel.text = [self switchSquare:self.whichPlayerLabel.text];
 
-        [self whoWon];
-        [self changingTurn];
+        if (self.gameTypeSegmentedControl.selectedSegmentIndex == 0)
+        {
+            [self computersTurn];
+        }
+        else
+        {
+            [self whoWon];
+            [self changingTurn];
+        }
+
     }
 }
 
 - (IBAction)dragToPlay:(UIPanGestureRecognizer *)gestureRecognizer
 {
+
     CGPoint point = [gestureRecognizer locationInView:self.view];
     self.whichPlayerLabel.center = point;
 
@@ -115,23 +134,34 @@
 
         UILabel *labelTouched = [self findLabelUsingPoint:point];
 
-        if (CGRectContainsPoint(labelTouched.frame, point))
-        {
-            if ([self.whichPlayerLabel.text isEqualToString:@"X"])
-            {
-                labelTouched.text = @"X";
-                labelTouched.textColor = [UIColor redColor];
-                self.whichPlayerLabel.text = @"O";
-            }
-            else
-            {
-                labelTouched.text = @"O";
-                labelTouched.textColor = [UIColor blueColor];
-                self.whichPlayerLabel.text = @"X";
-            }
+        // check if a UILabel was touched and it was not touched before
+        if (labelTouched != nil && [labelTouched.text isEqualToString:@""]) {
 
-            [self whoWon];
-            [self changingTurn];
+            if (CGRectContainsPoint(labelTouched.frame, point))
+            {
+                if ([self.whichPlayerLabel.text isEqualToString:@"X"])
+                {
+                    labelTouched.text = @"X";
+                    labelTouched.textColor = [UIColor redColor];
+                    self.whichPlayerLabel.text = @"O";
+                }
+                else
+                {
+                    labelTouched.text = @"O";
+                    labelTouched.textColor = [UIColor blueColor];
+                    self.whichPlayerLabel.text = @"X";
+                }
+
+                if (self.gameTypeSegmentedControl.selectedSegmentIndex == 0)
+                {
+                    [self computersTurn];
+                }
+                else
+                {
+                    [self whoWon];
+                    [self changingTurn];
+                }
+            }
         }
     }
 }
@@ -145,6 +175,14 @@
     if (self.remainingTicks <= 0)
     {
         self.whichPlayerLabel.text = [self switchSquare:self.whichPlayerLabel.text];
+
+        // check if it is the computer's turn to see if the game is over
+        if (self.gameTypeSegmentedControl.selectedSegmentIndex == 0)
+        {
+            [self whoWon];
+            self.computerTurnView.hidden = YES;
+        }
+
         [self changingTurn];
     }
     else if (self.remainingTicks == 1)
@@ -227,6 +265,53 @@
     return nil;
 }
 
+-(void)computersTurn
+{
+    [self whoWon];
+    [self changingTurn];
+
+//    sleep(2);
+
+//    to get how many UILabels are empty yet
+
+    int i=0;
+
+    for (UIView *views in self.view.subviews){
+        if([views isKindOfClass:[UILabel class]]){
+            UILabel *newLbl = (UILabel *)views;
+            if (newLbl != nil && [newLbl.text isEqualToString:@""]) {
+
+                i++;
+
+            }
+        }
+    }
+
+    int k=0;
+    int randomLabel = arc4random_uniform(i);
+
+    for (UIView *views in self.view.subviews){
+        if([views isKindOfClass:[UILabel class]]){
+            UILabel *newLbl = (UILabel *)views;
+            if (newLbl != nil && [newLbl.text isEqualToString:@""]) {
+
+                if (k == randomLabel) {
+                    newLbl.text = @"O";
+                    newLbl.textColor = [UIColor blueColor];
+
+                }
+
+                k++;
+
+            }
+        }
+    }
+
+    // enable view
+    self.computerTurnView.hidden = NO;
+
+}
+
 -(void)changingTurn
 {
     [self.timer invalidate];
@@ -293,6 +378,29 @@
         [alertWinner show];
 
     }
+
+    int i=0;
+
+    for (UIView *views in self.view.subviews){
+        if([views isKindOfClass:[UILabel class]]){
+            UILabel *newLbl = (UILabel *)views;
+            if (newLbl != nil && [newLbl.text isEqualToString:@""]) {
+                i++;
+            }
+        }
+    }
+
+    if (i == 0)
+    {
+        [self resetGame];
+
+        UIAlertView *alertWinner = [[UIAlertView alloc] initWithTitle:@"It's a draw"
+                                                              message:@"No winner this time!"
+                                                             delegate:self
+                                                    cancelButtonTitle:nil
+                                                    otherButtonTitles:@"Start Over", nil];
+        [alertWinner show];
+    }
 }
 
 - (NSString *)switchSquare:(NSString *)current
@@ -308,10 +416,6 @@
     }
 
     return current;
-}
-
-- (IBAction)resetGame:(UIBarButtonItem *)sender {
-    [self resetGame];
 }
 
 - (void)resetGame
@@ -332,12 +436,41 @@
     [self.timer invalidate];
     self.timer = nil;
 
+    self.computerTurnView.hidden = YES;
+
 }
 
 #pragma mark UIStoryboardSegue
 
 -(IBAction)unwindFromHelp:(UIStoryboardSegue *)sender
 {
+    
+}
+
+#pragma mark -IBAction
+- (IBAction)resetGame:(UIBarButtonItem *)sender {
+    [self resetGame];
+}
+
+- (IBAction)onGameTypeChoosen:(UISegmentedControl *)sender
+{
+
+    UIAlertView *alertGameType = [UIAlertView new];
+
+    if (sender.selectedSegmentIndex == 0)
+    {
+        alertGameType.title = @"One Player Game";
+        alertGameType.message = @"You are the X Player!";
+        [alertGameType addButtonWithTitle:@"Ok"];
+    }
+    else
+    {
+        alertGameType.title = @"Two Players Game";
+        alertGameType.message = @"Good Luck!";
+        [alertGameType addButtonWithTitle:@"Ok"];
+    }
+
+    [alertGameType show];
 
 }
 
