@@ -14,6 +14,7 @@
 		568761F41AB222BD0082F632 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 568761F21AB222BD0082F632 /* LaunchScreen.xib */; };
 		568762001AB222BD0082F632 /* TicTacToeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 568761FF1AB222BD0082F632 /* TicTacToeTests.m */; };
 		5687620B1AB225510082F632 /* GameViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5687620A1AB225510082F632 /* GameViewController.m */; };
+		5687620E1AB24AAB0082F632 /* HelpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5687620D1AB24AAB0082F632 /* HelpViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +41,8 @@
 		568761FF1AB222BD0082F632 /* TicTacToeTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TicTacToeTests.m; sourceTree = "<group>"; };
 		568762091AB225510082F632 /* GameViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameViewController.h; sourceTree = "<group>"; };
 		5687620A1AB225510082F632 /* GameViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameViewController.m; sourceTree = "<group>"; };
+		5687620C1AB24AAB0082F632 /* HelpViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HelpViewController.h; sourceTree = "<group>"; };
+		5687620D1AB24AAB0082F632 /* HelpViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HelpViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +89,8 @@
 				568762091AB225510082F632 /* GameViewController.h */,
 				5687620A1AB225510082F632 /* GameViewController.m */,
 				568761ED1AB222BD0082F632 /* Main.storyboard */,
+				5687620C1AB24AAB0082F632 /* HelpViewController.h */,
+				5687620D1AB24AAB0082F632 /* HelpViewController.m */,
 				568761F01AB222BD0082F632 /* Images.xcassets */,
 				568761F21AB222BD0082F632 /* LaunchScreen.xib */,
 				568761E31AB222BD0082F632 /* Supporting Files */,
@@ -222,6 +227,7 @@
 				568761E91AB222BD0082F632 /* AppDelegate.m in Sources */,
 				5687620B1AB225510082F632 /* GameViewController.m in Sources */,
 				568761E61AB222BD0082F632 /* main.m in Sources */,
+				5687620E1AB24AAB0082F632 /* HelpViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

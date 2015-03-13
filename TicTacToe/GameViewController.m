@@ -21,8 +21,20 @@
 @property (weak, nonatomic) IBOutlet UILabel *labelNine;
 @property (weak, nonatomic) IBOutlet UILabel *whichPlayerLabel;
 
+@property (weak, nonatomic) IBOutlet UILabel *squareX;
+@property (weak, nonatomic) IBOutlet UILabel *squareO;
+
+@property (weak, nonatomic) IBOutlet UILabel *timerLabel;
+
+
+@property CGPoint originalCenterSquareX;
+@property CGPoint originalCenterSquareO;
+
 @property NSArray *arrayWinnerX;
 @property NSArray *arrayWinnerO;
+
+@property NSTimer *timer;
+@property int remainingTicks;
 
 @end
 
@@ -58,6 +70,10 @@
 
     self.arrayWinnerX = [NSArray arrayWithObjects:@"X",@"X",@"X", nil];
     self.arrayWinnerO = [NSArray arrayWithObjects:@"O",@"O",@"O", nil];
+
+    self.originalCenterSquareX = self.squareX.center;
+    self.originalCenterSquareO = self.squareO.center;
+
 }
 
 #pragma mark Gesture Recognizer
@@ -87,6 +103,7 @@
 
         // it has a winner
         if (whoWon) {
+
             UIAlertView *alertWinner = [[UIAlertView alloc] initWithTitle:@"The Winner"
                                                                   message:whoWon
                                                                  delegate:self
@@ -94,8 +111,132 @@
                                                         otherButtonTitles:@"Start Over", nil];
             [alertWinner show];
         }
+
+        [self.timer invalidate];
+        self.timer = nil;
+        [self startTimer];
     }
 }
+
+- (IBAction)dragToPlay:(UIPanGestureRecognizer *)gestureRecognizer
+{
+
+    CGPoint point = [gestureRecognizer locationInView:self.view];
+    UILabel *labelTouched = [self findLabelUsingPoint:point];
+
+    // check if UILabel touched is some of the squares
+    if ([labelTouched isEqual:self.squareX] || [labelTouched isEqual:self.squareO])
+    {
+
+        if (gestureRecognizer.state == UIGestureRecognizerStateEnded)
+        {
+            NSLog(@"%@", NSStringFromCGPoint(self.squareX.center));
+
+            // when gesture ends it starts animation block
+            [UIView animateWithDuration:1.0 animations:^{
+                if ([labelTouched isEqual:self.squareX])
+                {
+                    self.squareX.center = self.originalCenterSquareX;
+
+                }
+                else if ([labelTouched isEqual:self.squareO])
+                {
+                    self.squareO.center = self.originalCenterSquareO;
+
+                }
+            }];
+        }
+        else
+        {
+            // give the location a view to contextualize the gesture
+            CGPoint point = [gestureRecognizer locationInView:self.view];
+            labelTouched.center = point;
+
+            NSLog(@"%@", labelTouched.text);
+
+            if (CGRectContainsPoint(self.labelOne.frame, point))
+            {
+                if ([labelTouched isEqual:self.squareX])
+                {
+                    self.labelOne.text = @"X";
+                    self.labelOne.textColor = [UIColor redColor];
+                    self.whichPlayerLabel.text = @"O";
+                }
+                else if ([labelTouched isEqual:self.squareO])
+                {
+                    self.labelOne.text = @"O";
+                    self.labelOne.textColor = [UIColor blueColor];
+                    self.whichPlayerLabel.text = @"X";
+                }
+            }
+
+
+//            // does the math to see if the rectangle is contained by point's coordinates
+//            if (CGRectContainsPoint(labelTouched.frame, point))
+//            {
+//                // check if UILabel touched is some of the squares
+//                if ([labelTouched isEqual:self.squareX])
+//                {
+//                    labelTouched.textColor = [UIColor redColor];
+//                    self.whichPlayerLabel.text = @"O";
+//                }
+//                else if ([labelTouched isEqual:self.squareO])
+//                {
+//                    labelTouched.textColor = [UIColor blueColor];
+//                    self.whichPlayerLabel.text = @"X";
+//                }
+//            }
+        }
+    }
+}
+
+#pragma mark NSTimer
+
+-(void)moveForfeited:(NSTimer *)timer
+{
+
+    self.remainingTicks--;
+
+    if (self.remainingTicks <= 0) {
+        [self.timer invalidate];
+        self.timer = nil;
+
+        if ([self.whichPlayerLabel.text isEqualToString:@"X"])
+        {
+            self.whichPlayerLabel.text = @"O";
+        }
+        else
+        {
+            self.whichPlayerLabel.text = @"X";
+        }
+
+        [self startTimer];
+    }
+    else if (self.remainingTicks == 1)
+    {
+        self.timerLabel.text = [NSString stringWithFormat:@"%i second", self.remainingTicks];
+    }
+    else
+    {
+        self.timerLabel.text = [NSString stringWithFormat:@"%i seconds", self.remainingTicks];
+    }
+
+}
+
+-(void)startTimer
+{
+
+    // 10 seconds each game
+    self.remainingTicks = 10;
+    self.timerLabel.text = [NSString stringWithFormat:@"%i seconds", self.remainingTicks];
+
+    self.timer = [NSTimer scheduledTimerWithTimeInterval: 1.0
+                                                  target: self
+                                                selector:@selector(moveForfeited:)
+                                                userInfo: nil
+                                                 repeats:YES];
+}
+
 
 #pragma mark UIAlertView
 
@@ -146,6 +287,14 @@
     else if (CGRectContainsPoint(self.labelNine.frame, point))
     {
         return self.labelNine;
+    }
+    else if (CGRectContainsPoint(self.squareX.frame, point))
+    {
+        return self.squareX;
+    }
+    else if (CGRectContainsPoint(self.squareO.frame, point))
+    {
+        return self.squareO;
     }
 
     return nil;
@@ -206,17 +355,29 @@
 
 - (void)resetGame
 {
-    self.labelOne.text = nil;
-    self.labelTwo.text = nil;
-    self.labelThree.text = nil;
-    self.labelFour.text = nil;
-    self.labelFive.text = nil;
-    self.labelSix.text = nil;
-    self.labelSeven.text = nil;
-    self.labelEight.text = nil;
-    self.labelNine.text = nil;
+    self.labelOne.text      = @"";
+    self.labelTwo.text      = @"";
+    self.labelThree.text    = @"";
+    self.labelFour.text     = @"";
+    self.labelFive.text     = @"";
+    self.labelSix.text      = @"";
+    self.labelSeven.text    = @"";
+    self.labelEight.text    = @"";
+    self.labelNine.text     = @"";
 
     self.whichPlayerLabel.text = @"X";
+
+    [self.timer invalidate];
+    self.timer = nil;
+
+    [self startTimer];
+}
+
+#pragma mark UIStoryboardSegue
+
+-(IBAction)unwindFromHelp:(UIStoryboardSegue *)sender
+{
+
 }
 
 @end
