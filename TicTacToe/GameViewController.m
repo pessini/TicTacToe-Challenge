@@ -8,6 +8,8 @@
 
 #import "GameViewController.h"
 
+#define TIME_FOR_EACH_PLAYER 10
+
 @interface GameViewController () <UIAlertViewDelegate>
 
 @property (weak, nonatomic) IBOutlet UILabel *labelOne;
@@ -20,15 +22,9 @@
 @property (weak, nonatomic) IBOutlet UILabel *labelEight;
 @property (weak, nonatomic) IBOutlet UILabel *labelNine;
 @property (weak, nonatomic) IBOutlet UILabel *whichPlayerLabel;
-
-@property (weak, nonatomic) IBOutlet UILabel *squareX;
-@property (weak, nonatomic) IBOutlet UILabel *squareO;
-
 @property (weak, nonatomic) IBOutlet UILabel *timerLabel;
 
-
-@property CGPoint originalCenterSquareX;
-@property CGPoint originalCenterSquareO;
+@property CGPoint originalCenterWhichPlayerSquare;
 
 @property NSArray *arrayWinnerX;
 @property NSArray *arrayWinnerO;
@@ -44,35 +40,34 @@
     [super viewDidLoad];
 
     // add borders for UILabels
-    self.labelOne.layer.borderColor = [UIColor grayColor].CGColor;
+
+    self.labelOne.layer.borderColor = [UIColor blackColor].CGColor;
     self.labelOne.layer.borderWidth = 3.0;
-    self.labelTwo.layer.borderColor = [UIColor grayColor].CGColor;
+    self.labelTwo.layer.borderColor = [UIColor blackColor].CGColor;
     self.labelTwo.layer.borderWidth = 3.0;
-    self.labelThree.layer.borderColor = [UIColor grayColor].CGColor;
+    self.labelThree.layer.borderColor = [UIColor blackColor].CGColor;
     self.labelThree.layer.borderWidth = 3.0;
-    self.labelFour.layer.borderColor = [UIColor grayColor].CGColor;
+    self.labelFour.layer.borderColor = [UIColor blackColor].CGColor;
     self.labelFour.layer.borderWidth = 3.0;
-    self.labelFive.layer.borderColor = [UIColor grayColor].CGColor;
+    self.labelFive.layer.borderColor = [UIColor blackColor].CGColor;
     self.labelFive.layer.borderWidth = 3.0;
-    self.labelSix.layer.borderColor = [UIColor grayColor].CGColor;
+    self.labelSix.layer.borderColor = [UIColor blackColor].CGColor;
     self.labelSix.layer.borderWidth = 3.0;
-    self.labelSeven.layer.borderColor = [UIColor grayColor].CGColor;
+    self.labelSeven.layer.borderColor = [UIColor blackColor].CGColor;
     self.labelSeven.layer.borderWidth = 3.0;
-    self.labelEight.layer.borderColor = [UIColor grayColor].CGColor;
+    self.labelEight.layer.borderColor = [UIColor blackColor].CGColor;
     self.labelEight.layer.borderWidth = 3.0;
-    self.labelNine.layer.borderColor = [UIColor grayColor].CGColor;
+    self.labelNine.layer.borderColor = [UIColor blackColor].CGColor;
     self.labelNine.layer.borderWidth = 3.0;
-    self.whichPlayerLabel.layer.borderColor = [UIColor grayColor].CGColor;
+    self.whichPlayerLabel.layer.borderColor = [UIColor blackColor].CGColor;
     self.whichPlayerLabel.layer.borderWidth = 3.0;
 
     // X will be the first to play
     self.whichPlayerLabel.text = @"X";
+    self.originalCenterWhichPlayerSquare = self.whichPlayerLabel.center;
 
     self.arrayWinnerX = [NSArray arrayWithObjects:@"X",@"X",@"X", nil];
     self.arrayWinnerO = [NSArray arrayWithObjects:@"O",@"O",@"O", nil];
-
-    self.originalCenterSquareX = self.squareX.center;
-    self.originalCenterSquareO = self.squareO.center;
 
 }
 
@@ -91,101 +86,52 @@
         if ([self.whichPlayerLabel.text isEqualToString:@"X"])
         {
             labelTouched.textColor = [UIColor redColor];
-            self.whichPlayerLabel.text = @"O";
         }
         else
         {
             labelTouched.textColor = [UIColor blueColor];
-            self.whichPlayerLabel.text = @"X";
         }
 
-        NSString *whoWon = [self whoWon];
+        self.whichPlayerLabel.text = [self switchSquare:self.whichPlayerLabel.text];
 
-        // it has a winner
-        if (whoWon) {
-
-            UIAlertView *alertWinner = [[UIAlertView alloc] initWithTitle:@"The Winner"
-                                                                  message:whoWon
-                                                                 delegate:self
-                                                        cancelButtonTitle:nil
-                                                        otherButtonTitles:@"Start Over", nil];
-            [alertWinner show];
-        }
-
-        [self.timer invalidate];
-        self.timer = nil;
-        [self startTimer];
+        [self whoWon];
+        [self changingTurn];
     }
 }
 
 - (IBAction)dragToPlay:(UIPanGestureRecognizer *)gestureRecognizer
 {
-
     CGPoint point = [gestureRecognizer locationInView:self.view];
-    UILabel *labelTouched = [self findLabelUsingPoint:point];
+    self.whichPlayerLabel.center = point;
 
-    // check if UILabel touched is some of the squares
-    if ([labelTouched isEqual:self.squareX] || [labelTouched isEqual:self.squareO])
+    if (gestureRecognizer.state == UIGestureRecognizerStateEnded)
     {
+        // when gesture ends it starts animation block
+        [UIView animateWithDuration:1.0 animations:^{
 
-        if (gestureRecognizer.state == UIGestureRecognizerStateEnded)
+            self.whichPlayerLabel.center = self.originalCenterWhichPlayerSquare;
+
+        }];
+
+        UILabel *labelTouched = [self findLabelUsingPoint:point];
+
+        if (CGRectContainsPoint(labelTouched.frame, point))
         {
-            NSLog(@"%@", NSStringFromCGPoint(self.squareX.center));
-
-            // when gesture ends it starts animation block
-            [UIView animateWithDuration:1.0 animations:^{
-                if ([labelTouched isEqual:self.squareX])
-                {
-                    self.squareX.center = self.originalCenterSquareX;
-
-                }
-                else if ([labelTouched isEqual:self.squareO])
-                {
-                    self.squareO.center = self.originalCenterSquareO;
-
-                }
-            }];
-        }
-        else
-        {
-            // give the location a view to contextualize the gesture
-            CGPoint point = [gestureRecognizer locationInView:self.view];
-            labelTouched.center = point;
-
-            NSLog(@"%@", labelTouched.text);
-
-            if (CGRectContainsPoint(self.labelOne.frame, point))
+            if ([self.whichPlayerLabel.text isEqualToString:@"X"])
             {
-                if ([labelTouched isEqual:self.squareX])
-                {
-                    self.labelOne.text = @"X";
-                    self.labelOne.textColor = [UIColor redColor];
-                    self.whichPlayerLabel.text = @"O";
-                }
-                else if ([labelTouched isEqual:self.squareO])
-                {
-                    self.labelOne.text = @"O";
-                    self.labelOne.textColor = [UIColor blueColor];
-                    self.whichPlayerLabel.text = @"X";
-                }
+                labelTouched.text = @"X";
+                labelTouched.textColor = [UIColor redColor];
+                self.whichPlayerLabel.text = @"O";
+            }
+            else
+            {
+                labelTouched.text = @"O";
+                labelTouched.textColor = [UIColor blueColor];
+                self.whichPlayerLabel.text = @"X";
             }
 
-
-//            // does the math to see if the rectangle is contained by point's coordinates
-//            if (CGRectContainsPoint(labelTouched.frame, point))
-//            {
-//                // check if UILabel touched is some of the squares
-//                if ([labelTouched isEqual:self.squareX])
-//                {
-//                    labelTouched.textColor = [UIColor redColor];
-//                    self.whichPlayerLabel.text = @"O";
-//                }
-//                else if ([labelTouched isEqual:self.squareO])
-//                {
-//                    labelTouched.textColor = [UIColor blueColor];
-//                    self.whichPlayerLabel.text = @"X";
-//                }
-//            }
+            [self whoWon];
+            [self changingTurn];
         }
     }
 }
@@ -194,23 +140,12 @@
 
 -(void)moveForfeited:(NSTimer *)timer
 {
-
     self.remainingTicks--;
 
-    if (self.remainingTicks <= 0) {
-        [self.timer invalidate];
-        self.timer = nil;
-
-        if ([self.whichPlayerLabel.text isEqualToString:@"X"])
-        {
-            self.whichPlayerLabel.text = @"O";
-        }
-        else
-        {
-            self.whichPlayerLabel.text = @"X";
-        }
-
-        [self startTimer];
+    if (self.remainingTicks <= 0)
+    {
+        self.whichPlayerLabel.text = [self switchSquare:self.whichPlayerLabel.text];
+        [self changingTurn];
     }
     else if (self.remainingTicks == 1)
     {
@@ -227,8 +162,8 @@
 {
 
     // 10 seconds each game
-    self.remainingTicks = 10;
-    self.timerLabel.text = [NSString stringWithFormat:@"%i seconds", self.remainingTicks];
+    self.remainingTicks = TIME_FOR_EACH_PLAYER;
+    self.timerLabel.text = [NSString stringWithFormat:@"%i seconds", TIME_FOR_EACH_PLAYER];
 
     self.timer = [NSTimer scheduledTimerWithTimeInterval: 1.0
                                                   target: self
@@ -288,23 +223,21 @@
     {
         return self.labelNine;
     }
-    else if (CGRectContainsPoint(self.squareX.frame, point))
-    {
-        return self.squareX;
-    }
-    else if (CGRectContainsPoint(self.squareO.frame, point))
-    {
-        return self.squareO;
-    }
 
     return nil;
 }
 
--(NSString *)whoWon
+-(void)changingTurn
+{
+    [self.timer invalidate];
+    self.timer = nil;
+    [self startTimer];
+}
+
+-(void)whoWon
 {
 
     NSString *theWinner = nil;
-
 
     // combinations to win - 8
 
@@ -347,8 +280,36 @@
 
     }
 
-    return theWinner;
+    // it has a winner
+    if (theWinner)
+    {
+        [self resetGame];
+
+        UIAlertView *alertWinner = [[UIAlertView alloc] initWithTitle:@"The Winner"
+                                                              message:theWinner
+                                                             delegate:self
+                                                    cancelButtonTitle:nil
+                                                    otherButtonTitles:@"Start Over", nil];
+        [alertWinner show];
+
+    }
 }
+
+- (NSString *)switchSquare:(NSString *)current
+{
+
+    if ([current isEqualToString:@"X"])
+    {
+        current = @"O";
+    }
+    else
+    {
+        current = @"X";
+    }
+
+    return current;
+}
+
 - (IBAction)resetGame:(UIBarButtonItem *)sender {
     [self resetGame];
 }
@@ -366,11 +327,11 @@
     self.labelNine.text     = @"";
 
     self.whichPlayerLabel.text = @"X";
+    self.timerLabel.text = [NSString stringWithFormat:@"%i seconds", TIME_FOR_EACH_PLAYER];
 
     [self.timer invalidate];
     self.timer = nil;
 
-    [self startTimer];
 }
 
 #pragma mark UIStoryboardSegue
