@@ -7,6 +7,7 @@
 //
 
 #import "GameViewController.h"
+#import "MBProgressHUD.h"
 
 #define TIME_FOR_EACH_PLAYER 5
 
@@ -180,7 +181,17 @@
         if (self.gameTypeSegmentedControl.selectedSegmentIndex == 0)
         {
             [self whoWon];
+            // need to re-reable all gestures on the view
+            NSArray *gestures = self.view.gestureRecognizers;
+            for(UIGestureRecognizer *gesture in gestures)
+            {
+                if([gesture isKindOfClass: [UITapGestureRecognizer class]])
+                {
+                    gesture.enabled = YES;
+                }
+            }
             self.computerTurnView.hidden = YES;
+
         }
 
         [self changingTurn];
@@ -270,7 +281,16 @@
     [self whoWon];
     [self changingTurn];
 
-//    sleep(2);
+    // need to disable all gestures on the view
+    NSArray *gestures = self.view.gestureRecognizers;
+    for(UIGestureRecognizer *gesture in gestures)
+    {
+        if([gesture isKindOfClass: [UITapGestureRecognizer class]])
+        {
+            gesture.enabled = NO;
+        }
+    }
+//    self.computerTurnView.userInteractionEnabled = NO;
 
 //    to get how many UILabels are empty yet
 
