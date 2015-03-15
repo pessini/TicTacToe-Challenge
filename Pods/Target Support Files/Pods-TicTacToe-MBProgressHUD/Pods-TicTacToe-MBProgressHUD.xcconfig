@@ -1,1 +1,0 @@
-PODS_TICTACTOE_MBPROGRESSHUD_OTHER_LDFLAGS = -framework "CoreGraphics"
